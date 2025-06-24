@@ -26,6 +26,10 @@ jobs:
           unzip -o liquibase.zip -d /usr/local/bin/liquibase
           chmod +x /usr/local/bin/liquibase/liquibase
           echo "/usr/local/bin/liquibase" >> $GITHUB_PATH
+      - name: Debug Secrets
+        run: |
+          echo "URL: jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}"
+          echo "USER: ${{ secrets.DB_USER }}"
 
       - name: Run Liquibase Migrations
         run: |
