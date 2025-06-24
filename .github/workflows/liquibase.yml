@@ -24,14 +24,14 @@ jobs:
         run: |
           curl -sL https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.zip -o liquibase.zip
           unzip -o liquibase.zip -d /usr/local/bin/liquibase
-          chmod +x /usr/local/bin/liquibase/liquibase.jar
+          chmod +x /usr/local/bin/liquibase/liquibase
+          echo "/usr/local/bin/liquibase" >> $GITHUB_PATH
 
       - name: Run Liquibase Migrations
         run: |
-          java -jar /usr/local/bin/liquibase/liquibase.jar \
+          /usr/local/bin/liquibase/liquibase \
             --changeLogFile=changelog/db.changelog-master.yaml \
             --url=jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
             --username=${{ secrets.DB_USER }} \
             --password=${{ secrets.DB_PASS }} \
             update
-
