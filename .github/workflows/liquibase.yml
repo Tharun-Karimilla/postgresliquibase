@@ -4,36 +4,34 @@ on:
   push:
     paths:
       - 'changelog/**'
-      - '.github/workflows/liquibase.yml'
+      - '.github/workflows/**'
+      - '.secrets'
 
 jobs:
   liquibase-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Install Liquibase
-      run: |
-        curl -Lo liquibase.tar.gz https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz
-        mkdir liquibase
-        tar -xzf liquibase.tar.gz -C liquibase --strip-components=1
-        sudo cp -r liquibase /opt/liquibase
-        sudo ln -s /opt/liquibase/liquibase /usr/local/bin/liquibase
+      - name: Install Liquibase
+        run: |
+          curl -sL https://github.com/liquibase/liquibase/releases/download/v4.27.0/liquibase-4.27.0.zip -o liquibase.zip
+          unzip -o liquibase.zip -d /usr/local/bin/liquibase
+          chmod +x /usr/local/bin/liquibase/liquibase.jar
 
+      - name: Run Liquibase Migrations
+        run: |
+          java -jar /usr/local/bin/liquibase/liquibase.jar \
+            --changeLogFile=changelog/db.changelog-master.yaml \
+            --url=jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
+            --username=${{ secrets.DB_USER }} \
+            --password=${{ secrets.DB_PASS }} \
+            update
 
-    - name: Run Liquibase Migrations
-      run: |
-        liquibase \
-          --url="${{ secrets.DB_URI }}" \
-          --changeLogFile=changelog/db.changelog-master.yaml \
-          --username=postgres \
-          --password=${{ secrets.DB_PASS }} \
-          update
