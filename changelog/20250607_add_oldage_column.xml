@@ -1,0 +1,14 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20250607" author="author">
+        <addColumn tableName="users">
+            <column name="oldage" type="int"/>
+        </addColumn>
+        <rollback>
+            <dropColumn columnName="oldage" tableName="users"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
