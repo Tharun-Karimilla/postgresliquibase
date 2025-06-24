@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250607
+      author: user
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: oldage
+                  type: integer
+        - rollback:
+            - dropColumn:
+                tableName: users
+                columnName: oldage
